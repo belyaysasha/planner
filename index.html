@@ -430,6 +430,14 @@ main{padding:16px 14px;padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8
       <div class="detail-title" id="subtaskDetailTitle"></div>
     </div>
     <div class="detail-meta" id="subtaskDetailMeta"></div>
+    <div class="form-group" style="margin-bottom:16px">
+      <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:7px">📅 Дедлайн</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="date" id="subtaskDeadlineEdit" style="flex:1;border:1.5px solid var(--border);border-radius:11px;padding:11px 14px;font-family:'IBM Plex Sans',sans-serif;font-size:16px;color:var(--text);background:var(--surface2);outline:none;-webkit-appearance:none;" oninput="saveSubtaskDeadline()">
+        <button onclick="clearSubtaskDeadline()" style="background:none;border:1.5px solid var(--border);border-radius:9px;padding:10px 12px;color:var(--text-muted);font-size:13px;cursor:pointer;white-space:nowrap">Убрать</button>
+      </div>
+      <div class="notes-saved-indicator" id="subtaskDeadlineSaved">✓ Сохранено</div>
+    </div>
     <div class="detail-section-title">📝 Заметки</div>
     <textarea class="notes-area" id="subtaskNotes" placeholder="Заметки по подзадаче..."></textarea>
     <div class="notes-saved-indicator" id="subtaskNotesSaved">✓ Сохранено</div>
@@ -889,9 +897,24 @@ window.openSubtaskDetail=function(pid,sid){
     `<span class="detail-tag" style="background:var(--project-soft);color:var(--project)">📁 ${escHtml(p.name)}</span>${dlStr}`;
   document.getElementById('subtaskNotes').value=s.notes||'';
   document.getElementById('subtaskNotesSaved').classList.remove('show');
+  document.getElementById('subtaskDeadlineEdit').value=s.deadline||'';
+  document.getElementById('subtaskDeadlineSaved').classList.remove('show');
   renderComments(s.comments||[],'subtaskCommentsList','deleteSubtaskComment');
   document.getElementById('newSubtaskComment').value='';
   document.getElementById('subtaskDetailSheet').classList.add('open');
+};
+
+window.saveSubtaskDeadline=function(){
+  if(!viewingSubtaskId)return;
+  const{pid,sid}=viewingSubtaskId;
+  const data=loadData(),p=data.projects.find(p=>p.id===pid);if(!p)return;
+  const s=p.subtasks.find(s=>s.id===sid);if(!s)return;
+  s.deadline=document.getElementById('subtaskDeadlineEdit').value||null;
+  saveData(data);renderAll();showSaved('subtaskDeadlineSaved');
+};
+window.clearSubtaskDeadline=function(){
+  document.getElementById('subtaskDeadlineEdit').value='';
+  saveSubtaskDeadline();
 };
 window.closeSubtaskDetail=function(){document.getElementById('subtaskDetailSheet').classList.remove('open');viewingSubtaskId=null;};
 window.toggleSubtaskFromDetail=function(){
