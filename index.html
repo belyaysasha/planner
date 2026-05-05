@@ -9,7 +9,7 @@
 <title>Планировщик</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root {
+:root{
   --bg:#f5f3ee;--surface:#fff;--surface2:#f0ede6;--border:#e0dbd0;
   --text:#1a1714;--text-muted:#7a7166;--text-light:#b0a898;
   --accent:#c8321e;--accent-soft:#f5e8e6;
@@ -47,6 +47,18 @@ header h1{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;}
 .week-nav button{background:rgba(255,255,255,0.12);border:none;color:white;width:30px;height:30px;border-radius:7px;font-size:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
 .week-nav button:active{opacity:0.6;}
 
+/* SECTION SWITCHER (week tab top-right) */
+.section-switcher{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;}
+.section-switcher::-webkit-scrollbar{display:none;}
+.sec-btn{flex-shrink:0;border:1.5px solid var(--border);background:var(--surface);border-radius:20px;padding:6px 14px;font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.sec-btn:active{opacity:0.7;}
+.sec-btn.active{border-color:transparent;color:white;}
+.sec-btn.active.s-work{background:var(--work);}
+.sec-btn.active.s-project{background:var(--project);}
+.sec-btn.active.s-family{background:var(--family);}
+.sec-btn.active.s-health{background:var(--health);}
+.sec-btn.active.s-personal{background:var(--personal);}
+
 /* BOTTOM NAV */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--text);display:flex;padding-bottom:var(--safe-bottom);z-index:50;border-top:1px solid rgba(255,255,255,0.08);}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px;cursor:pointer;gap:3px;color:rgba(255,255,255,0.4);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;}
@@ -70,7 +82,7 @@ main{padding:16px 14px;padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8
 #fabBackdrop{display:none;position:fixed;inset:0;z-index:38;}
 
 /* DAYS STRIP */
-.days-strip{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-bottom:16px;}
+.days-strip{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-bottom:14px;}
 .day-cell{background:var(--surface);border-radius:10px;border:1.5px solid var(--border);padding:7px 2px;text-align:center;cursor:pointer;transition:all 0.15s;}
 .day-cell:active{opacity:0.7;}
 .day-cell.today{border-color:var(--accent);background:var(--accent-soft);}
@@ -81,7 +93,6 @@ main{padding:16px 14px;padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8
 .day-cell.today .day-name{color:var(--accent);}
 .day-num{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;margin-top:2px;}
 .day-count{font-size:9px;color:var(--text-light);margin-top:2px;}
-.day-all{font-size:9px;font-weight:700;line-height:1;margin-top:4px;}
 
 /* ROLLOVER */
 .rollover-banner{background:#fff8e8;border:1px solid #f5d87a;border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:#7a5800;line-height:1.5;}
@@ -107,10 +118,10 @@ main{padding:16px 14px;padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8
 .task-text.done{color:var(--done);text-decoration:line-through;}
 .task-meta{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;align-items:center;}
 .task-day-label{font-size:11px;color:var(--text-light);font-family:'IBM Plex Mono',monospace;}
-.task-overdue{font-size:11px;color:var(--accent);font-weight:600;}
+.task-deadline-tag{font-size:11px;background:var(--accent-soft);color:var(--accent);padding:2px 7px;border-radius:8px;font-weight:600;}
+.task-deadline-ok{font-size:11px;background:var(--project-soft);color:var(--project);padding:2px 7px;border-radius:8px;font-weight:600;}
 .task-note-hint{font-size:11px;color:var(--text-light);font-style:italic;}
 .task-project-tag{font-size:11px;background:var(--project-soft);color:var(--project);padding:2px 7px;border-radius:8px;font-weight:600;}
-.task-deadline-tag{font-size:11px;background:var(--accent-soft);color:var(--accent);padding:2px 7px;border-radius:8px;font-weight:600;}
 .task-actions{display:flex;flex-direction:column;gap:2px;}
 .task-action-btn{background:none;border:none;color:var(--text-light);font-size:18px;padding:5px 7px;cursor:pointer;border-radius:7px;line-height:1;}
 .task-action-btn:active{background:var(--surface2);color:var(--text);}
@@ -129,8 +140,6 @@ main{padding:16px 14px;padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8
 .project-progress-fill{height:100%;border-radius:3px;background:var(--project);transition:width 0.4s ease;}
 .project-stats{font-size:12px;color:var(--text-muted);font-family:'IBM Plex Mono',monospace;margin-bottom:12px;}
 .project-notes-preview{font-size:13px;color:var(--text-muted);background:var(--surface2);border-radius:8px;padding:8px 11px;margin-bottom:12px;border-left:3px solid var(--project);white-space:pre-wrap;line-height:1.5;}
-
-/* SUBTASK ROW */
 .project-subtasks{list-style:none;}
 .project-subtask{padding:10px 0;border-bottom:1px solid var(--border);}
 .project-subtask:last-child{border-bottom:none;}
@@ -142,7 +151,6 @@ main{padding:16px 14px;padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8
 .subtask-deadline-badge.ok{background:var(--project-soft);color:var(--project);}
 .subtask-comment-count{font-size:11px;color:var(--text-light);font-style:italic;}
 .subtask-actions{display:flex;gap:2px;}
-
 .subtask-input-area{margin-top:12px;background:var(--surface2);border-radius:10px;padding:12px;}
 .subtask-input-area .label-sm{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:6px;}
 .subtask-input-row{display:flex;gap:8px;margin-bottom:8px;}
@@ -158,6 +166,10 @@ main{padding:16px 14px;padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8
 /* SCREENS */
 .screen{display:none;}
 .screen.active{display:block;}
+
+/* WEEK SECTIONS */
+.week-section{display:none;}
+.week-section.active{display:block;}
 
 /* BOTTOM SHEET */
 .sheet-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:flex-end;}
@@ -244,58 +256,94 @@ main{padding:16px 14px;padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8
 </header>
 
 <main>
-  <!-- WEEK -->
+
+  <!-- ===== WEEK SCREEN ===== -->
   <div class="screen active" id="screenWeek">
     <div class="days-strip" id="daysStrip"></div>
     <div id="rolloverBanner" class="rollover-banner" style="display:none"><span id="rolloverText"></span></div>
 
-    <!-- Work current -->
-    <div class="section-card">
-      <div class="section-header">
-        <span class="section-title"><span style="color:var(--work)">●</span> Работа
-          <span class="section-badge" id="workCountBadge" style="display:none"></span>
-        </span>
-        <button class="add-in-section" onclick="openTaskSheet('work')">+</button>
-      </div>
-      <div id="workTaskList"></div>
+    <!-- Section switcher pills -->
+    <div class="section-switcher">
+      <button class="sec-btn active s-work" onclick="switchWeekSection('work')">💼 Работа</button>
+      <button class="sec-btn s-project" onclick="switchWeekSection('project')">📁 Проекты</button>
+      <button class="sec-btn s-family" onclick="switchWeekSection('family')">👨‍👩‍👧 Семья</button>
+      <button class="sec-btn s-health" onclick="switchWeekSection('health')">🏃 Здоровье</button>
+      <button class="sec-btn s-personal" onclick="switchWeekSection('personal')">✨ Личное</button>
     </div>
 
-    <!-- Project tasks this week -->
-    <div class="section-card" id="projectTasksCard" style="display:none">
-      <div class="section-header">
-        <span class="section-title"><span style="color:var(--project)">●</span> Проектные задачи</span>
+    <!-- WORK section -->
+    <div class="week-section active" id="ws-work">
+      <div class="section-card">
+        <div class="section-header">
+          <span class="section-title"><span style="color:var(--work)">●</span> Работа
+            <span class="section-badge" id="workCountBadge" style="display:none"></span>
+          </span>
+          <button class="add-in-section" onclick="openTaskSheet('work')">+</button>
+        </div>
+        <div id="workTaskList"></div>
       </div>
-      <div id="projectTaskList"></div>
     </div>
 
-    <div class="page-title" style="font-size:18px;margin-top:4px">🏠 Личное</div>
-    <div class="personal-block bg-family-soft">
-      <div class="personal-block-title c-family">👨‍👩‍👧 Семья
-        <button class="add-in-section" style="background:rgba(107,58,140,0.1)" onclick="openTaskSheet('family')">+</button>
+    <!-- PROJECT section -->
+    <div class="week-section" id="ws-project">
+      <div class="section-card">
+        <div class="section-header">
+          <span class="section-title"><span style="color:var(--project)">●</span> Проектные задачи</span>
+        </div>
+        <div id="projectTaskList"></div>
       </div>
-      <div id="familyListW"></div>
     </div>
-    <div class="personal-block bg-health-soft">
-      <div class="personal-block-title c-health">🏃 Здоровье
-        <button class="add-in-section" style="background:rgba(184,92,0,0.1)" onclick="openTaskSheet('health')">+</button>
+
+    <!-- FAMILY section -->
+    <div class="week-section" id="ws-family">
+      <div class="personal-block bg-family-soft">
+        <div class="personal-block-title c-family">👨‍👩‍👧 Семья
+          <button class="add-in-section" style="background:rgba(107,58,140,0.1)" onclick="openTaskSheet('family')">+</button>
+        </div>
+        <div id="familyListW"></div>
       </div>
-      <div id="healthListW"></div>
     </div>
-    <div class="personal-block bg-personal-soft">
-      <div class="personal-block-title c-personal">✨ Личное
-        <button class="add-in-section" style="background:rgba(26,107,107,0.1)" onclick="openTaskSheet('personal')">+</button>
+
+    <!-- HEALTH section -->
+    <div class="week-section" id="ws-health">
+      <div class="personal-block bg-health-soft">
+        <div class="personal-block-title c-health">🏃 Здоровье
+          <button class="add-in-section" style="background:rgba(184,92,0,0.1)" onclick="openTaskSheet('health')">+</button>
+        </div>
+        <div id="healthListW"></div>
       </div>
-      <div id="personalListW"></div>
+    </div>
+
+    <!-- PERSONAL section -->
+    <div class="week-section" id="ws-personal">
+      <div class="personal-block bg-personal-soft">
+        <div class="personal-block-title c-personal">✨ Личное
+          <button class="add-in-section" style="background:rgba(26,107,107,0.1)" onclick="openTaskSheet('personal')">+</button>
+        </div>
+        <div id="personalListW"></div>
+      </div>
     </div>
   </div>
 
-  <!-- PROJECTS -->
+  <!-- ===== PROJECTS SCREEN ===== -->
   <div class="screen" id="screenProjects">
     <div class="page-title">📁 Проекты</div>
     <div id="projectsList"></div>
   </div>
 
-  <!-- PERSONAL -->
+  <!-- ===== WORK SCREEN ===== -->
+  <div class="screen" id="screenWork">
+    <div class="page-title">💼 Все рабочие задачи</div>
+    <div class="section-card">
+      <div class="section-header">
+        <span class="section-title"><span style="color:var(--work)">●</span> Все задачи</span>
+        <button class="add-in-section" onclick="openTaskSheet('work')">+</button>
+      </div>
+      <div id="workTaskListAll"></div>
+    </div>
+  </div>
+
+  <!-- ===== PERSONAL SCREEN ===== -->
   <div class="screen" id="screenPersonal">
     <div class="page-title">🏠 Личное</div>
     <div class="personal-block bg-family-soft">
@@ -317,10 +365,13 @@ main{padding:16px 14px;padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8
       <div id="personalListP"></div>
     </div>
   </div>
+
 </main>
 
+<!-- BOTTOM NAV: 4 tabs -->
 <nav class="bottom-nav">
   <div class="nav-item active" id="navWeek" onclick="switchScreen('week')"><span class="nav-icon">📅</span><span>Неделя</span></div>
+  <div class="nav-item" id="navWork" onclick="switchScreen('work')"><span class="nav-icon">💼</span><span>Работа</span></div>
   <div class="nav-item" id="navProjects" onclick="switchScreen('projects')"><span class="nav-icon">📁</span><span>Проекты</span></div>
   <div class="nav-item" id="navPersonal" onclick="switchScreen('personal')"><span class="nav-icon">🏠</span><span>Личное</span></div>
 </nav>
@@ -343,19 +394,26 @@ main{padding:16px 14px;padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8
     <div class="form-row">
       <div class="form-group"><label>Категория</label>
         <select id="taskCategory" onchange="onCategoryChange()">
-          <option value="work">💼 Работа</option><option value="family">👨‍👩‍👧 Семья</option>
-          <option value="health">🏃 Здоровье</option><option value="personal">✨ Личное</option>
+          <option value="work">💼 Работа</option>
+          <option value="family">👨‍👩‍👧 Семья</option>
+          <option value="health">🏃 Здоровье</option>
+          <option value="personal">✨ Личное</option>
         </select>
       </div>
-      <div class="form-group" id="taskDayGroup"><label>День</label>
+      <div class="form-group" id="taskDayGroup"><label>День недели</label>
         <select id="taskDay">
-          <option value="">Весь день</option><option value="0">Пн</option><option value="1">Вт</option>
+          <option value="">Любой</option><option value="0">Пн</option><option value="1">Вт</option>
           <option value="2">Ср</option><option value="3">Чт</option><option value="4">Пт</option>
           <option value="5">Сб</option><option value="6">Вс</option>
         </select>
       </div>
     </div>
-    <!-- Date picker for personal/family/health -->
+    <!-- Deadline date — shown for work tasks -->
+    <div class="form-group" id="taskDeadlineGroup">
+      <label>Дедлайн (конкретная дата)</label>
+      <input type="date" id="taskDeadline">
+    </div>
+    <!-- Specific date — shown for personal tasks -->
     <div class="form-group" id="taskDateGroup" style="display:none">
       <label>Конкретная дата</label>
       <input type="date" id="taskDate">
@@ -405,7 +463,7 @@ main{padding:16px 14px;padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8
       <div class="subtask-input-area">
         <div class="label-sm">Текст подзадачи</div>
         <div class="subtask-input-row">
-          <input type="text" id="subtaskInput" placeholder="Название подзадачи..." onkeydown="if(event.key==='Enter'){event.preventDefault();}">
+          <input type="text" id="subtaskInput" placeholder="Название..." onkeydown="if(event.key==='Enter'){event.preventDefault();}">
           <button onclick="addSubtask()">+ Добавить</button>
         </div>
         <div class="subtask-date-row">
@@ -431,10 +489,10 @@ main{padding:16px 14px;padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8
     </div>
     <div class="detail-meta" id="subtaskDetailMeta"></div>
     <div class="form-group" style="margin-bottom:16px">
-      <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:7px">📅 Дедлайн</label>
+      <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:7px">📅 Дедлайн подзадачи</label>
       <div style="display:flex;gap:8px;align-items:center">
-        <input type="date" id="subtaskDeadlineEdit" style="flex:1;border:1.5px solid var(--border);border-radius:11px;padding:11px 14px;font-family:'IBM Plex Sans',sans-serif;font-size:16px;color:var(--text);background:var(--surface2);outline:none;-webkit-appearance:none;" oninput="saveSubtaskDeadline()">
-        <button onclick="clearSubtaskDeadline()" style="background:none;border:1.5px solid var(--border);border-radius:9px;padding:10px 12px;color:var(--text-muted);font-size:13px;cursor:pointer;white-space:nowrap">Убрать</button>
+        <input type="date" id="subtaskDeadlineEdit" oninput="saveSubtaskDeadline()" style="flex:1;border:1.5px solid var(--border);border-radius:11px;padding:11px 14px;font-family:'IBM Plex Sans',sans-serif;font-size:16px;color:var(--text);background:var(--surface2);outline:none;-webkit-appearance:none;">
+        <button onclick="clearSubtaskDeadline()" style="background:none;border:1.5px solid var(--border);border-radius:9px;padding:11px 12px;color:var(--text-muted);font-size:13px;cursor:pointer;white-space:nowrap;font-family:'IBM Plex Sans',sans-serif">Убрать</button>
       </div>
       <div class="notes-saved-indicator" id="subtaskDeadlineSaved">✓ Сохранено</div>
     </div>
@@ -490,9 +548,6 @@ main{padding:16px 14px;padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 
-// =====================================================
-// FIREBASE CONFIG
-// =====================================================
 const firebaseConfig = {
   apiKey:            "AIzaSyDGjE150U4x65-E_ltQwXggkZE7SHOV5oo",
   authDomain:        "my-planner-fdf7d.firebaseapp.com",
@@ -502,44 +557,33 @@ const firebaseConfig = {
   messagingSenderId: "824800823619",
   appId:             "1:824800823619:web:36ec6505b90408576e47f6"
 };
-// =====================================================
 
-let db = null;
-let firebaseReady = false;
-let remoteData = null;
-let saveTimer = null;
-let currentWeekOffset = 0;
-let selectedDayFilter = null; // null = all days
-let editingTaskId = null;
-let editingProjectId = null;
-let viewingTaskId = null;
-let viewingProjectId = null;
-let viewingSubtaskId = null; // {projectId, subtaskId}
-let newProjectSubtasks = [];
-let fabOpen = false;
-let notesTimer = null;
-let projNotesTimer = null;
-let subtaskNotesTimer = null;
+let db=null, firebaseReady=false, remoteData=null, saveTimer=null;
+let currentWeekOffset=0, selectedDayFilter=null;
+let editingTaskId=null, editingProjectId=null;
+let viewingTaskId=null, viewingProjectId=null, viewingSubtaskId=null;
+let newProjectSubtasks=[], fabOpen=false;
+let notesTimer=null, projNotesTimer=null, subtaskNotesTimer=null;
+let activeWeekSection='work';
 
-const LOCAL_KEY = 'planner_v2';
-
+const LOCAL_KEY='planner_v2';
 function loadLocal(){try{return JSON.parse(localStorage.getItem(LOCAL_KEY))||{tasks:[],projects:[]};}catch{return{tasks:[],projects:[]};}}
 function saveLocal(d){localStorage.setItem(LOCAL_KEY,JSON.stringify(d));}
 function loadData(){return remoteData||loadLocal();}
 
 function setSyncStatus(state,text){
-  const led=document.getElementById('syncLed'), st=document.getElementById('syncStatus');
-  led.className='sync-led '+state; st.textContent=text;
+  document.getElementById('syncLed').className='sync-led '+state;
+  document.getElementById('syncStatus').textContent=text;
 }
 
 async function saveData(d){
-  saveLocal(d); remoteData=d;
-  if(!firebaseReady||!db) return;
+  saveLocal(d);remoteData=d;
+  if(!firebaseReady||!db)return;
   setSyncStatus('syncing','сохранение...');
   clearTimeout(saveTimer);
   saveTimer=setTimeout(async()=>{
     try{await set(ref(db,'planner'),d);setSyncStatus('online','синхронизировано');}
-    catch(e){setSyncStatus('offline','ошибка записи');console.error(e);}
+    catch(e){setSyncStatus('offline','ошибка');console.error(e);}
   },600);
 }
 
@@ -552,9 +596,9 @@ function initFirebase(){
       const val=snap.val();
       if(val&&(val.tasks||val.projects)){
         remoteData={tasks:val.tasks||[],projects:val.projects||[]};
-        saveLocal(remoteData); renderAll(); setSyncStatus('online','синхронизировано'); firebaseReady=true;
-      } else if(!firebaseReady){
-        const local=loadLocal(); remoteData=local;
+        saveLocal(remoteData);renderAll();setSyncStatus('online','синхронизировано');firebaseReady=true;
+      }else if(!firebaseReady){
+        const local=loadLocal();remoteData=local;
         set(ref(db,'planner'),local).then(()=>{setSyncStatus('online','синхронизировано');firebaseReady=true;renderAll();});
       }
     },(err)=>{setSyncStatus('offline','нет связи');console.error(err);remoteData=loadLocal();renderAll();});
@@ -568,15 +612,21 @@ function getWeekStart(off=0){
 }
 function isoDate(d){return d.toISOString().split('T')[0];}
 function formatDate(d){return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}`;}
-function formatDateFull(iso){if(!iso)return'';const d=new Date(iso);return `${formatDate(d)}.${d.getFullYear()}`;}
-function formatDateTime(iso){const d=new Date(iso);return `${formatDate(d)} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}
+function formatDateFull(iso){if(!iso)return'';const d=new Date(iso);return`${formatDate(d)}.${d.getFullYear()}`;}
+function formatDateTime(iso){const d=new Date(iso);return`${formatDate(d)} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}
 function getWeekDays(off){const s=getWeekStart(off);return Array.from({length:7},(_,i)=>{const d=new Date(s);d.setDate(s.getDate()+i);return d;});}
 function getWeekKey(off){return isoDate(getWeekStart(off));}
-
-// get week key for a specific iso date
 function weekKeyForDate(iso){
   const d=new Date(iso),day=d.getDay(),diff=day===0?-6:1-day;
   const mon=new Date(d);mon.setHours(0,0,0,0);mon.setDate(d.getDate()+diff);return isoDate(mon);
+}
+function isOverdue(iso){return iso&&iso<isoDate(new Date());}
+function isNear(iso){
+  if(!iso)return false;
+  const t=new Date();t.setHours(0,0,0,0);
+  const dl=new Date(iso);dl.setHours(0,0,0,0);
+  const diff=(dl-t)/86400000;
+  return diff>=0&&diff<=3;
 }
 
 function renderWeekLabel(){
@@ -589,55 +639,48 @@ function renderWeekLabel(){
   document.getElementById('weekLabel').textContent=lbl;
 }
 
-// ===== DAYS STRIP (with filter) =====
 const DAY_NAMES=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
 
 function renderDaysStrip(){
   const days=getWeekDays(currentWeekOffset),today=isoDate(new Date());
   const data=loadData(),wk=getWeekKey(currentWeekOffset);
-
-  // count tasks per day (regular + project subtasks)
-  const countByDay=Array(7).fill(0);
-  data.tasks.filter(t=>t.weekKey===wk&&!t.done&&t.dayOfWeek!=null).forEach(t=>countByDay[t.dayOfWeek]++);
-  // project subtasks with deadline in this week
-  (data.projects||[]).forEach(p=>(p.subtasks||[]).forEach(s=>{
-    if(!s.done&&s.deadline&&weekKeyForDate(s.deadline)===wk){
-      const dow=new Date(s.deadline).getDay();const idx=dow===0?6:dow-1;countByDay[idx]++;
-    }
-  }));
-  // personal tasks with specific date in this week
-  data.tasks.filter(t=>t.specificDate&&weekKeyForDate(t.specificDate)===wk&&!t.done).forEach(t=>{
-    const dow=new Date(t.specificDate).getDay();const idx=dow===0?6:dow-1;countByDay[idx]++;
+  const cnt=Array(7).fill(0);
+  // work tasks: by dayOfWeek or deadline date
+  data.tasks.filter(t=>t.category==='work'&&!t.done).forEach(t=>{
+    if(t.deadline&&weekKeyForDate(t.deadline)===wk){const dow=new Date(t.deadline).getDay();cnt[dow===0?6:dow-1]++;}
+    else if(t.weekKey===wk&&t.dayOfWeek!=null)cnt[t.dayOfWeek]++;
   });
+  // personal tasks by specificDate
+  data.tasks.filter(t=>t.category!=='work'&&t.specificDate&&weekKeyForDate(t.specificDate)===wk&&!t.done).forEach(t=>{
+    const dow=new Date(t.specificDate).getDay();cnt[dow===0?6:dow-1]++;
+  });
+  // project subtasks
+  (data.projects||[]).forEach(p=>(p.subtasks||[]).forEach(s=>{
+    if(!s.done&&s.deadline&&weekKeyForDate(s.deadline)===wk){const dow=new Date(s.deadline).getDay();cnt[dow===0?6:dow-1]++;}
+  }));
 
-  const allCell=`<div class="day-cell${selectedDayFilter===null?' selected':''}" onclick="filterDay(null)" style="font-size:11px;font-weight:700;color:${selectedDayFilter===null?'white':'var(--text-muted)'}">
+  const allCell=`<div class="day-cell${selectedDayFilter===null?' selected':''}" onclick="filterDay(null)">
     <div class="day-name" style="font-size:8px">ВСЕ</div>
     <div class="day-num" style="font-size:12px">📅</div>
     <div class="day-count">&nbsp;</div>
   </div>`;
-
-  const dayCells=days.map((d,i)=>{
-    const iso=isoDate(d),isToday=iso===today,isSel=selectedDayFilter===i;
-    const cnt=countByDay[i];
-    return `<div class="day-cell${isToday&&!isSel?' today':''}${isSel?' selected':cnt>0?' has-tasks':''}" onclick="filterDay(${i})">
+  const cells=days.map((d,i)=>{
+    const iso=isoDate(d),isToday=iso===today,isSel=selectedDayFilter===i,hasTasks=cnt[i]>0;
+    return`<div class="day-cell${isToday&&!isSel?' today':''}${isSel?' selected':hasTasks?' has-tasks':''}" onclick="filterDay(${i})">
       <div class="day-name">${DAY_NAMES[i]}</div>
       <div class="day-num">${d.getDate()}</div>
-      <div class="day-count">${cnt>0?cnt:'·'}</div>
+      <div class="day-count">${hasTasks?cnt[i]:'·'}</div>
     </div>`;
   }).join('');
-
-  document.getElementById('daysStrip').innerHTML=allCell+dayCells;
+  document.getElementById('daysStrip').innerHTML=allCell+cells;
 }
 
-window.filterDay=function(idx){
-  selectedDayFilter=idx;
-  renderAll();
-};
+window.filterDay=function(idx){selectedDayFilter=idx;renderAll();};
 
 function checkRollover(){
   if(currentWeekOffset!==0){document.getElementById('rolloverBanner').style.display='none';return;}
   const data=loadData(),prev=getWeekKey(-1);
-  const undone=data.tasks.filter(t=>t.weekKey===prev&&!t.done&&t.category==='work');
+  const undone=data.tasks.filter(t=>t.weekKey===prev&&!t.done&&t.category==='work'&&!t.deadline);
   if(undone.length>0){
     document.getElementById('rolloverBanner').style.display='block';
     document.getElementById('rolloverText').innerHTML=`⚠️ Из прошлой недели: <b>${undone.length}</b> незакрытых задач. <a href="#" onclick="rolloverTasks(event)">Перенести →</a>`;
@@ -646,8 +689,17 @@ function checkRollover(){
 window.rolloverTasks=function(e){
   e.preventDefault();
   const data=loadData(),prev=getWeekKey(-1),curr=getWeekKey(0);
-  data.tasks.forEach(t=>{if(t.weekKey===prev&&!t.done&&t.category==='work'){t.weekKey=curr;t.rolledOver=true;}});
+  data.tasks.forEach(t=>{if(t.weekKey===prev&&!t.done&&t.category==='work'&&!t.deadline){t.weekKey=curr;t.rolledOver=true;}});
   saveData(data);renderAll();
+};
+
+// ===== WEEK SECTION SWITCHER =====
+window.switchWeekSection=function(sec){
+  activeWeekSection=sec;
+  document.querySelectorAll('.week-section').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.sec-btn').forEach(el=>el.classList.remove('active'));
+  document.getElementById('ws-'+sec).classList.add('active');
+  document.querySelector(`.sec-btn.s-${sec}`).classList.add('active');
 };
 
 const CAT_INFO={
@@ -658,22 +710,37 @@ const CAT_INFO={
 };
 
 function taskMatchesFilter(t){
-  if(selectedDayFilter===null) return true;
-  if(t.dayOfWeek!=null&&t.dayOfWeek!=='') return Number(t.dayOfWeek)===selectedDayFilter;
-  if(t.specificDate){const dow=new Date(t.specificDate).getDay();const idx=dow===0?6:dow-1;return idx===selectedDayFilter;}
-  return selectedDayFilter===null;
+  if(selectedDayFilter===null)return true;
+  // work: by deadline date day or dayOfWeek
+  if(t.category==='work'){
+    if(t.deadline){const dow=new Date(t.deadline).getDay();return(dow===0?6:dow-1)===selectedDayFilter;}
+    if(t.dayOfWeek!=null)return Number(t.dayOfWeek)===selectedDayFilter;
+    return false;
+  }
+  // personal: by specificDate
+  if(t.specificDate){const dow=new Date(t.specificDate).getDay();return(dow===0?6:dow-1)===selectedDayFilter;}
+  return false;
+}
+
+function deadlineTag(iso,done){
+  if(!iso)return'';
+  if(done)return`<span class="task-day-label">📅 ${formatDateFull(iso)}</span>`;
+  if(isOverdue(iso))return`<span class="task-deadline-tag">⚠️ ${formatDateFull(iso)}</span>`;
+  if(isNear(iso))return`<span class="task-deadline-ok">📅 ${formatDateFull(iso)}</span>`;
+  return`<span class="task-day-label">📅 ${formatDateFull(iso)}</span>`;
 }
 
 function taskHTML(t){
-  const dl=(t.dayOfWeek!=null&&t.dayOfWeek!=='')?`<span class="task-day-label">${DAY_NAMES[t.dayOfWeek]}</span>`:'';
+  const dl=(t.dayOfWeek!=null&&t.dayOfWeek!=='')&&!t.deadline?`<span class="task-day-label">${DAY_NAMES[t.dayOfWeek]}</span>`:'';
+  const dlTag=deadlineTag(t.deadline,t.done);
   const dateLabel=t.specificDate?`<span class="task-day-label">📅 ${formatDateFull(t.specificDate)}</span>`:'';
   const rl=t.rolledOver?`<span class="task-overdue">↩ перенесена</span>`:'';
-  const hn=(t.notes&&t.notes.trim())||(t.comments&&t.comments.length>0)?`<span class="task-note-hint">📝 заметки</span>`:'';
-  return `<div class="task-item">
+  const hn=(t.notes&&t.notes.trim())||(t.comments&&t.comments.length>0)?`<span class="task-note-hint">📝</span>`:'';
+  return`<div class="task-item">
     <div class="task-check${t.done?' done':''}" onclick="toggleTask('${t.id}')"></div>
     <div class="task-body" onclick="openTaskDetail('${t.id}')">
       <div class="task-text${t.done?' done':''}">${escHtml(t.text)}</div>
-      <div class="task-meta">${dl}${dateLabel}${rl}${hn}</div>
+      <div class="task-meta">${dl}${dlTag}${dateLabel}${rl}${hn}</div>
     </div>
     <div class="task-actions">
       <button class="task-action-btn" onclick="openTaskDetail('${t.id}')">📝</button>
@@ -694,85 +761,81 @@ function renderAll(){
   renderWeekLabel();renderDaysStrip();checkRollover();
   const data=loadData(),wk=getWeekKey(currentWeekOffset);
 
-  // Filter tasks by week AND day filter
-  function weekTasks(cat){
-    let tasks=data.tasks.filter(t=>t.category===cat);
-    // for work: week-based; for personal: week OR specificDate falls in this week
-    if(cat==='work'){
-      tasks=tasks.filter(t=>t.weekKey===wk);
-    } else {
-      tasks=tasks.filter(t=>{
-        if(t.specificDate) return weekKeyForDate(t.specificDate)===wk;
-        return t.weekKey===wk;
-      });
-    }
-    if(selectedDayFilter!==null) tasks=tasks.filter(t=>taskMatchesFilter(t));
-    return tasks;
-  }
+  // Work tasks for week: either weekKey matches OR deadline falls in this week
+  let workWeek=data.tasks.filter(t=>t.category==='work'&&(
+    (t.deadline&&weekKeyForDate(t.deadline)===wk)||
+    (!t.deadline&&t.weekKey===wk)
+  ));
+  if(selectedDayFilter!==null)workWeek=workWeek.filter(t=>taskMatchesFilter(t));
 
-  const work=weekTasks('work');
-  const fam=weekTasks('family');
-  const hlt=weekTasks('health');
-  const per=weekTasks('personal');
-
-  const undone=work.filter(t=>!t.done).length;
+  const undone=workWeek.filter(t=>!t.done).length;
   const badge=document.getElementById('workCountBadge');
   badge.textContent=undone;badge.style.display=undone>0?'':'none';
+  renderTaskList('workTaskList',workWeek,'Нет задач на эту неделю');
 
-  renderTaskList('workTaskList',work,'Нет задач на эту неделю');
-  ['W','P'].forEach(s=>{
-    renderTaskList('familyList'+s,fam,'Нет задач');
-    renderTaskList('healthList'+s,hlt,'Нет задач');
-    renderTaskList('personalList'+s,per,'Нет задач');
+  // Personal for week
+  function personalWeek(cat){
+    let tasks=data.tasks.filter(t=>t.category===cat&&(
+      (t.specificDate&&weekKeyForDate(t.specificDate)===wk)||
+      (!t.specificDate&&t.weekKey===wk)
+    ));
+    if(selectedDayFilter!==null)tasks=tasks.filter(t=>taskMatchesFilter(t));
+    return tasks;
+  }
+  renderTaskList('familyListW',personalWeek('family'),'Нет задач');
+  renderTaskList('healthListW',personalWeek('health'),'Нет задач');
+  renderTaskList('personalListW',personalWeek('personal'),'Нет задач');
+
+  // Work ALL screen — all work tasks sorted by deadline then by weekKey
+  const workAll=[...data.tasks.filter(t=>t.category==='work')].sort((a,b)=>{
+    const da=a.deadline||a.weekKey||'9999';
+    const db_=b.deadline||b.weekKey||'9999';
+    return da.localeCompare(db_);
+  });
+  renderTaskList('workTaskListAll',workAll,'Нет рабочих задач');
+
+  // Personal screens
+  ['P'].forEach(s=>{
+    renderTaskList('familyList'+s,data.tasks.filter(t=>t.category==='family'),'Нет задач');
+    renderTaskList('healthList'+s,data.tasks.filter(t=>t.category==='health'),'Нет задач');
+    renderTaskList('personalList'+s,data.tasks.filter(t=>t.category==='personal'),'Нет задач');
   });
 
-  // Project subtasks appearing this week
+  // Project subtasks this week
   renderProjectWeekTasks(data,wk);
   renderProjects(data);
 }
 window.renderAll=renderAll;
 
-// ===== PROJECT SUBTASKS ON WEEK VIEW =====
 function renderProjectWeekTasks(data,wk){
-  const card=document.getElementById('projectTasksCard');
   const list=document.getElementById('projectTaskList');
   const items=[];
-  (data.projects||[]).forEach(p=>{
-    (p.subtasks||[]).forEach(s=>{
-      if(!s.deadline) return;
-      const sdWk=weekKeyForDate(s.deadline);
-      if(sdWk!==wk) return;
-      // day filter
-      if(selectedDayFilter!==null){
-        const dow=new Date(s.deadline).getDay(),idx=dow===0?6:dow-1;
-        if(idx!==selectedDayFilter) return;
-      }
-      items.push({p,s});
-    });
-  });
-
-  if(items.length===0){card.style.display='none';return;}
-  card.style.display='';
+  (data.projects||[]).forEach(p=>(p.subtasks||[]).forEach(s=>{
+    if(!s.deadline||weekKeyForDate(s.deadline)!==wk)return;
+    if(selectedDayFilter!==null){const dow=new Date(s.deadline).getDay(),idx=dow===0?6:dow-1;if(idx!==selectedDayFilter)return;}
+    items.push({p,s});
+  }));
+  if(items.length===0){
+    list.innerHTML=`<div class="empty-state">Нет проектных задач на эту неделю</div>`;
+    return;
+  }
   list.innerHTML=items.map(({p,s})=>{
-    const isOverdue=s.deadline&&s.deadline<isoDate(new Date())&&!s.done;
-    return `<div class="task-item">
+    const over=!s.done&&isOverdue(s.deadline);
+    return`<div class="task-item">
       <div class="task-check${s.done?' done':''}" onclick="toggleSubtask('${p.id}','${s.id}')"></div>
       <div class="task-body" onclick="openSubtaskDetail('${p.id}','${s.id}')">
         <div class="task-text${s.done?' done':''}">${escHtml(s.text)}</div>
         <div class="task-meta">
           <span class="task-project-tag">📁 ${escHtml(p.name)}</span>
-          <span class="${isOverdue?'task-deadline-tag':'task-day-label'}">📅 ${formatDateFull(s.deadline)}</span>
+          <span class="${over?'task-deadline-tag':'task-day-label'}">📅 ${formatDateFull(s.deadline)}</span>
           ${(s.comments&&s.comments.length>0)?'<span class="task-note-hint">💬 '+s.comments.length+'</span>':''}
         </div>
       </div>
-      <div class="task-actions">
-        <button class="task-action-btn" onclick="openSubtaskDetail('${p.id}','${s.id}')">📝</button>
-      </div>
+      <div class="task-actions"><button class="task-action-btn" onclick="openSubtaskDetail('${p.id}','${s.id}')">📝</button></div>
     </div>`;
   }).join('');
 }
 
-// ===== PROJECTS RENDER =====
 function renderProjects(data){
   const el=document.getElementById('projectsList');
   if(!data.projects||data.projects.length===0){
@@ -782,32 +845,19 @@ function renderProjects(data){
   el.innerHTML=data.projects.map(p=>projectHTML(p)).join('');
 }
 
-function isDeadlineNear(iso){
-  if(!iso) return false;
-  const today=new Date();today.setHours(0,0,0,0);
-  const dl=new Date(iso);dl.setHours(0,0,0,0);
-  const diff=(dl-today)/86400000;
-  return diff<=3&&diff>=0;
-}
-function isDeadlineOverdue(iso){
-  if(!iso) return false;
-  return iso<isoDate(new Date());
-}
-
 function projectHTML(p){
   const total=(p.subtasks||[]).length,done=(p.subtasks||[]).filter(s=>s.done).length;
   const pct=total>0?Math.round(done/total*100):0;
   const dl=p.deadline?` · до ${formatDateFull(p.deadline)}`:'';
   const np=p.notes&&p.notes.trim()?`<div class="project-notes-preview">${escHtml(p.notes.slice(0,150))}${p.notes.length>150?'…':''}</div>`:'';
   const cc=(p.comments||[]).length;
-
   const subs=(p.subtasks||[]).map(s=>{
-    const overdue=!s.done&&isDeadlineOverdue(s.deadline);
-    const near=!s.done&&!overdue&&isDeadlineNear(s.deadline);
-    const dlBadge=s.deadline?`<span class="subtask-deadline-badge${overdue?'':' ok'}" style="${overdue?'':''}">📅 ${formatDateFull(s.deadline)}</span>`:'';
-    const cmtCount=(s.comments&&s.comments.length>0)?`<span class="subtask-comment-count">💬 ${s.comments.length}</span>`:'';
-    const noteHint=(s.notes&&s.notes.trim())?`<span class="subtask-comment-count">📝</span>`:'';
-    return `<li class="project-subtask">
+    const over=!s.done&&isOverdue(s.deadline);
+    const near=!s.done&&!over&&isNear(s.deadline);
+    const dlBadge=s.deadline?`<span class="subtask-deadline-badge${over?'':' ok'}">📅 ${formatDateFull(s.deadline)}</span>`:'';
+    const cmt=(s.comments&&s.comments.length>0)?`<span class="subtask-comment-count">💬 ${s.comments.length}</span>`:'';
+    const nt=(s.notes&&s.notes.trim())?`<span class="subtask-comment-count">📝</span>`:'';
+    return`<li class="project-subtask">
       <div class="subtask-main-row">
         <div class="task-check${s.done?' done':''}" onclick="toggleSubtask('${p.id}','${s.id}')"></div>
         <span class="task-text${s.done?' done':''}" style="flex:1;cursor:pointer" onclick="openSubtaskDetail('${p.id}','${s.id}')">${escHtml(s.text)}</span>
@@ -816,11 +866,11 @@ function projectHTML(p){
           <button class="task-action-btn del" onclick="deleteSubtask('${p.id}','${s.id}')">✕</button>
         </div>
       </div>
-      <div class="subtask-meta-row">${dlBadge}${cmtCount}${noteHint}</div>
+      <div class="subtask-meta-row">${dlBadge}${cmt}${nt}</div>
     </li>`;
   }).join('');
-
-  return `<div class="project-card">
+  // BUG FIX: inline add uses data-pid attribute, not dynamic id lookup after re-render
+  return`<div class="project-card" id="pc_${p.id}">
     <div class="project-name"><span>${escHtml(p.name)}</span>
       <div class="project-header-actions">
         <button class="task-action-btn" onclick="openProjNotesSheet('${p.id}')">📝${cc>0?` <span style="font-size:11px;color:var(--project)">${cc}</span>`:''}</button>
@@ -835,12 +885,12 @@ function projectHTML(p){
     <div class="subtask-input-area" style="margin-top:12px">
       <div class="label-sm">Добавить подзадачу</div>
       <div class="subtask-input-row">
-        <input type="text" placeholder="Название..." id="sub_${p.id}" onkeydown="if(event.key==='Enter'){event.preventDefault();}">
+        <input type="text" placeholder="Название..." data-pid="${p.id}" class="inline-sub-text">
         <button onclick="addSubtaskInline('${p.id}')">+</button>
       </div>
       <div class="subtask-date-row">
         <label>Дедлайн:</label>
-        <input type="date" id="subdate_${p.id}">
+        <input type="date" data-pid="${p.id}" class="inline-sub-date">
       </div>
     </div>
   </div>`;
@@ -854,10 +904,11 @@ window.openTaskDetail=function(id){
   document.getElementById('detailCheck').className='detail-check'+(t.done?' done':'');
   document.getElementById('detailTitle').textContent=t.text;
   document.getElementById('detailTitle').className='detail-title'+(t.done?' done':'');
-  const dayStr=(t.dayOfWeek!=null&&t.dayOfWeek!=='')?`<span class="detail-tag" style="background:var(--surface2);color:var(--text-muted)">📅 ${DAY_NAMES[t.dayOfWeek]}</span>`:'';
+  const dayStr=(t.dayOfWeek!=null&&t.dayOfWeek!==''&&!t.deadline)?`<span class="detail-tag" style="background:var(--surface2);color:var(--text-muted)">📅 ${DAY_NAMES[t.dayOfWeek]}</span>`:'';
+  const dlTag=t.deadline?`<span class="detail-tag" style="background:${isOverdue(t.deadline)?'var(--accent-soft)':'var(--project-soft)'};color:${isOverdue(t.deadline)?'var(--accent)':'var(--project)'}">📅 ${formatDateFull(t.deadline)}</span>`:'';
   const dateStr=t.specificDate?`<span class="detail-tag" style="background:var(--surface2);color:var(--text-muted)">📅 ${formatDateFull(t.specificDate)}</span>`:'';
   const rl=t.rolledOver?`<span class="detail-tag" style="background:var(--accent-soft);color:var(--accent)">↩ перенесена</span>`:'';
-  document.getElementById('detailMeta').innerHTML=`<span class="detail-tag" style="background:${ci.bg};color:${ci.color}">${ci.label}</span>${dayStr}${dateStr}${rl}`;
+  document.getElementById('detailMeta').innerHTML=`<span class="detail-tag" style="background:${ci.bg};color:${ci.color}">${ci.label}</span>${dayStr}${dlTag}${dateStr}${rl}`;
   document.getElementById('taskNotes').value=t.notes||'';
   document.getElementById('notesSavedIndicator').classList.remove('show');
   renderComments(t.comments||[],'commentsList','deleteComment');
@@ -893,8 +944,7 @@ window.openSubtaskDetail=function(pid,sid){
   document.getElementById('subtaskDetailCheck').className='detail-check'+(s.done?' done':'');
   document.getElementById('subtaskDetailTitle').textContent=s.text;
   const dlStr=s.deadline?`<span class="detail-tag" style="background:var(--accent-soft);color:var(--accent)">📅 ${formatDateFull(s.deadline)}</span>`:'';
-  document.getElementById('subtaskDetailMeta').innerHTML=
-    `<span class="detail-tag" style="background:var(--project-soft);color:var(--project)">📁 ${escHtml(p.name)}</span>${dlStr}`;
+  document.getElementById('subtaskDetailMeta').innerHTML=`<span class="detail-tag" style="background:var(--project-soft);color:var(--project)">📁 ${escHtml(p.name)}</span>${dlStr}`;
   document.getElementById('subtaskNotes').value=s.notes||'';
   document.getElementById('subtaskNotesSaved').classList.remove('show');
   document.getElementById('subtaskDeadlineEdit').value=s.deadline||'';
@@ -902,19 +952,6 @@ window.openSubtaskDetail=function(pid,sid){
   renderComments(s.comments||[],'subtaskCommentsList','deleteSubtaskComment');
   document.getElementById('newSubtaskComment').value='';
   document.getElementById('subtaskDetailSheet').classList.add('open');
-};
-
-window.saveSubtaskDeadline=function(){
-  if(!viewingSubtaskId)return;
-  const{pid,sid}=viewingSubtaskId;
-  const data=loadData(),p=data.projects.find(p=>p.id===pid);if(!p)return;
-  const s=p.subtasks.find(s=>s.id===sid);if(!s)return;
-  s.deadline=document.getElementById('subtaskDeadlineEdit').value||null;
-  saveData(data);renderAll();showSaved('subtaskDeadlineSaved');
-};
-window.clearSubtaskDeadline=function(){
-  document.getElementById('subtaskDeadlineEdit').value='';
-  saveSubtaskDeadline();
 };
 window.closeSubtaskDetail=function(){document.getElementById('subtaskDetailSheet').classList.remove('open');viewingSubtaskId=null;};
 window.toggleSubtaskFromDetail=function(){
@@ -926,6 +963,15 @@ window.toggleSubtaskFromDetail=function(){
   document.getElementById('subtaskDetailCheck').className='detail-check'+(s.done?' done':'');
   renderAll();
 };
+window.saveSubtaskDeadline=function(){
+  if(!viewingSubtaskId)return;
+  const{pid,sid}=viewingSubtaskId;
+  const data=loadData(),p=data.projects.find(p=>p.id===pid);if(!p)return;
+  const s=p.subtasks.find(s=>s.id===sid);if(!s)return;
+  s.deadline=document.getElementById('subtaskDeadlineEdit').value||null;
+  saveData(data);renderAll();showSaved('subtaskDeadlineSaved');
+};
+window.clearSubtaskDeadline=function(){document.getElementById('subtaskDeadlineEdit').value='';saveSubtaskDeadline();};
 
 document.getElementById('subtaskNotes').addEventListener('input',function(){
   clearTimeout(subtaskNotesTimer);
@@ -934,8 +980,7 @@ document.getElementById('subtaskNotes').addEventListener('input',function(){
     const{pid,sid}=viewingSubtaskId;
     const data=loadData(),p=data.projects.find(p=>p.id===pid);if(!p)return;
     const s=p.subtasks.find(s=>s.id===sid);if(!s)return;
-    s.notes=this.value;saveData(data);renderAll();
-    showSaved('subtaskNotesSaved');
+    s.notes=this.value;saveData(data);renderAll();showSaved('subtaskNotesSaved');
   },800);
 });
 
@@ -955,25 +1000,20 @@ window.deleteSubtaskComment=function(idx){
   const{pid,sid}=viewingSubtaskId;
   const data=loadData(),p=data.projects.find(p=>p.id===pid);if(!p)return;
   const s=p.subtasks.find(s=>s.id===sid);if(!s||!s.comments)return;
-  s.comments.splice(idx,1);saveData(data);
-  renderComments(s.comments,'subtaskCommentsList','deleteSubtaskComment');renderAll();
+  s.comments.splice(idx,1);saveData(data);renderComments(s.comments,'subtaskCommentsList','deleteSubtaskComment');renderAll();
 };
 
-// ===== COMMENTS HELPER =====
-function renderComments(comments,containerId,deleteFn){
-  const el=document.getElementById(containerId);
+function renderComments(comments,cid,delFn){
+  const el=document.getElementById(cid);
   if(!comments||comments.length===0){el.innerHTML=`<div style="color:var(--text-light);font-size:13px;padding:8px 0">Комментариев пока нет</div>`;return;}
   el.innerHTML=comments.map((c,i)=>`
     <div class="comment-item">
       <div class="comment-date">${formatDateTime(c.date)}</div>
       <div class="comment-text">${escHtml(c.text)}</div>
-      <button class="comment-del" onclick="${deleteFn}(${i})">✕</button>
+      <button class="comment-del" onclick="${delFn}(${i})">✕</button>
     </div>`).join('');
 }
-
-function showSaved(id){
-  const el=document.getElementById(id);el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2000);
-}
+function showSaved(id){const el=document.getElementById(id);el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2000);}
 
 window.addComment=function(){
   if(!viewingTaskId)return;
@@ -981,14 +1021,12 @@ window.addComment=function(){
   const data=loadData(),t=data.tasks.find(t=>t.id===viewingTaskId);if(!t)return;
   if(!t.comments)t.comments=[];
   t.comments.push({date:new Date().toISOString(),text});
-  saveData(data);inp.value='';inp.style.height='auto';
-  renderComments(t.comments,'commentsList','deleteComment');renderAll();
+  saveData(data);inp.value='';inp.style.height='auto';renderComments(t.comments,'commentsList','deleteComment');renderAll();
 };
 window.deleteComment=function(idx){
   if(!viewingTaskId)return;
   const data=loadData(),t=data.tasks.find(t=>t.id===viewingTaskId);if(!t||!t.comments)return;
-  t.comments.splice(idx,1);saveData(data);
-  renderComments(t.comments,'commentsList','deleteComment');renderAll();
+  t.comments.splice(idx,1);saveData(data);renderComments(t.comments,'commentsList','deleteComment');renderAll();
 };
 
 // ===== PROJECT NOTES =====
@@ -1024,19 +1062,17 @@ window.addProjComment=function(){
   const data=loadData(),p=data.projects.find(p=>p.id===viewingProjectId);if(!p)return;
   if(!p.comments)p.comments=[];
   p.comments.push({date:new Date().toISOString(),text});
-  saveData(data);inp.value='';inp.style.height='auto';
-  renderComments(p.comments,'projCommentsList','deleteProjComment');renderAll();
+  saveData(data);inp.value='';inp.style.height='auto';renderComments(p.comments,'projCommentsList','deleteProjComment');renderAll();
 };
 window.deleteProjComment=function(idx){
   if(!viewingProjectId)return;
   const data=loadData(),p=data.projects.find(p=>p.id===viewingProjectId);if(!p||!p.comments)return;
-  p.comments.splice(idx,1);saveData(data);
-  renderComments(p.comments,'projCommentsList','deleteProjComment');renderAll();
+  p.comments.splice(idx,1);saveData(data);renderComments(p.comments,'projCommentsList','deleteProjComment');renderAll();
 };
 
 // ===== SCREENS =====
 window.switchScreen=function(s){
-  ['week','projects','personal'].forEach(n=>{
+  ['week','work','projects','personal'].forEach(n=>{
     document.getElementById('screen'+cap(n)).classList.toggle('active',n===s);
     document.getElementById('nav'+cap(n)).classList.toggle('active',n===s);
   });
@@ -1064,23 +1100,22 @@ window.openTaskSheet=function(category){
   document.getElementById('taskSheetTitle').textContent='Новая задача';
   document.getElementById('taskText').value='';
   document.getElementById('taskDay').value='';
+  document.getElementById('taskDeadline').value='';
   document.getElementById('taskDate').value='';
   document.getElementById('taskCategory').value=category||'work';
   onCategoryChange();
   document.getElementById('taskSheet').classList.add('open');
   setTimeout(()=>document.getElementById('taskText').focus(),350);
 };
-
 function onCategoryChange(){
-  const cat=document.getElementById('taskCategory').value;
-  const isWork=cat==='work';
+  const cat=document.getElementById('taskCategory').value,isWork=cat==='work';
   document.getElementById('projectLinkGroup').style.display=isWork?'':'none';
   document.getElementById('taskDayGroup').style.display=isWork?'':'none';
+  document.getElementById('taskDeadlineGroup').style.display=isWork?'':'none';
   document.getElementById('taskDateGroup').style.display=isWork?'none':'';
   if(isWork)populateProjectSelect();
 }
 window.onCategoryChange=onCategoryChange;
-
 function populateProjectSelect(){
   const data=loadData();
   document.getElementById('taskProject').innerHTML='<option value="">— без проекта —</option>'+
@@ -1091,15 +1126,24 @@ window.saveTask=function(){
   const text=document.getElementById('taskText').value.trim();if(!text)return;
   const category=document.getElementById('taskCategory').value;
   const dayVal=document.getElementById('taskDay').value;
-  const dateVal=document.getElementById('taskDate').value;
+  const deadlineVal=document.getElementById('taskDeadline').value; // work deadline
+  const dateVal=document.getElementById('taskDate').value;          // personal date
   const projectId=document.getElementById('taskProject').value;
   const data=loadData();
-  const wk=dateVal&&category!=='work'?weekKeyForDate(dateVal):getWeekKey(currentWeekOffset);
+  // Determine weekKey: if deadline set → use its week; if specificDate → use its week; else current
+  const wk=deadlineVal?weekKeyForDate(deadlineVal):dateVal?weekKeyForDate(dateVal):getWeekKey(currentWeekOffset);
   if(editingTaskId){
     const t=data.tasks.find(t=>t.id===editingTaskId);
-    if(t){t.text=text;t.category=category;t.dayOfWeek=dayVal!==''?Number(dayVal):null;t.specificDate=dateVal||null;t.projectId=projectId||null;t.weekKey=wk;}
+    if(t){
+      t.text=text;t.category=category;
+      t.dayOfWeek=dayVal!==''?Number(dayVal):null;
+      t.deadline=deadlineVal||null;
+      t.specificDate=dateVal||null;
+      t.projectId=projectId||null;
+      t.weekKey=wk;
+    }
   }else{
-    data.tasks.push({id:uid(),text,category,weekKey:wk,dayOfWeek:dayVal!==''?Number(dayVal):null,specificDate:dateVal||null,done:false,notes:'',comments:[],projectId:projectId||null});
+    data.tasks.push({id:uid(),text,category,weekKey:wk,dayOfWeek:dayVal!==''?Number(dayVal):null,deadline:deadlineVal||null,specificDate:dateVal||null,done:false,notes:'',comments:[],projectId:projectId||null});
   }
   saveData(data);closeTaskSheet();renderAll();
 };
@@ -1110,6 +1154,7 @@ window.editTask=function(id){
   document.getElementById('taskText').value=t.text;
   document.getElementById('taskCategory').value=t.category;
   document.getElementById('taskDay').value=t.dayOfWeek!=null&&t.dayOfWeek!==''?t.dayOfWeek:'';
+  document.getElementById('taskDeadline').value=t.deadline||'';
   document.getElementById('taskDate').value=t.specificDate||'';
   onCategoryChange();
   if(t.category==='work')document.getElementById('taskProject').value=t.projectId||'';
@@ -1127,7 +1172,7 @@ window.deleteTask=function(id){
 window.openProjectSheet=function(){
   editingProjectId=null;newProjectSubtasks=[];
   document.getElementById('projectSheetTitle').textContent='Новый проект';
-  ['projectName','projectDeadline','subtaskInput','subtaskDeadline'].forEach(id=>document.getElementById(id).value='');
+  ['projectName','projectDeadline','subtaskInput','subtaskDeadline'].forEach(i=>document.getElementById(i).value='');
   document.getElementById('subtaskEditList').innerHTML='';
   document.getElementById('projectSheet').classList.add('open');
   setTimeout(()=>document.getElementById('projectName').focus(),350);
@@ -1186,13 +1231,16 @@ window.deleteSubtask=function(pid,sid){
   const data=loadData(),p=data.projects.find(p=>p.id===pid);
   if(p)p.subtasks=p.subtasks.filter(s=>s.id!==sid);saveData(data);renderAll();
 };
+
+// BUG FIX: use data-pid attributes instead of dynamic element IDs that break after re-render
 window.addSubtaskInline=function(pid){
-  const inp=document.getElementById('sub_'+pid);if(!inp)return;
-  const text=inp.value.trim();if(!text)return;
-  const dateInp=document.getElementById('subdate_'+pid);
+  const card=document.getElementById('pc_'+pid);if(!card)return;
+  const textInp=card.querySelector('.inline-sub-text');
+  const dateInp=card.querySelector('.inline-sub-date');
+  const text=textInp?textInp.value.trim():'';if(!text)return;
   const deadline=dateInp?dateInp.value:'';
-  const data=loadData(),p=data.projects.find(p=>p.id===pid);
-  if(p)p.subtasks.push({id:uid(),text,done:false,deadline:deadline||null,notes:'',comments:[]});
+  const data=loadData(),p=data.projects.find(p=>p.id===pid);if(!p)return;
+  p.subtasks.push({id:uid(),text,done:false,deadline:deadline||null,notes:'',comments:[]});
   saveData(data);renderAll();
 };
 
@@ -1216,7 +1264,7 @@ window.importData=function(e){
   reader.onload=async function(ev){
     try{
       const d=JSON.parse(ev.target.result);
-      if(!d.tasks||!d.projects)throw new Error('Invalid');
+      if(!d.tasks||!d.projects)throw new Error();
       if(confirm(`Загрузить? Задач: ${d.tasks.length}, проектов: ${d.projects.length}. Текущие данные будут заменены.`)){
         await saveData(d);renderAll();closeSyncSheet();alert('Загружено!');
       }
@@ -1230,13 +1278,8 @@ window.clearAllData=async function(){
   await saveData({tasks:[],projects:[]});renderAll();closeSyncSheet();
 };
 
-window.changeWeek=function(dir){
-  currentWeekOffset+=dir;
-  selectedDayFilter=null; // reset day filter on week change
-  renderAll();
-};
+window.changeWeek=function(dir){currentWeekOffset+=dir;selectedDayFilter=null;renderAll();};
 
-// Close sheets on backdrop tap
 ['taskSheet','projectSheet','taskDetailSheet','subtaskDetailSheet','projectNotesSheet','syncSheet'].forEach(id=>{
   document.getElementById(id).addEventListener('click',function(e){
     if(e.target!==this)return;
@@ -1247,7 +1290,6 @@ window.changeWeek=function(dir){
 
 function uid(){return Math.random().toString(36).slice(2,10);}
 
-// ===== START =====
 setSyncStatus('syncing','подключение...');
 remoteData=loadLocal();
 renderAll();
