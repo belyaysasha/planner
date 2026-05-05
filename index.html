@@ -1218,17 +1218,21 @@ window.deleteSubtask=function(pid,sid){
   if(p)p.subtasks=p.subtasks.filter(s=>s.id!==sid);saveData(data);renderAll();
 };
 
-// BUG FIX: use event delegation on document — onclick attrs don't work reliably in type=module
+// Use event delegation — works regardless of subtask count
 document.addEventListener('click', function(e){
   const btn = e.target.closest('.inline-sub-btn');
   if(!btn) return;
-  const pid = btn.dataset.pid;
-  const card = btn.closest('.project-card');
-  if(!card || !pid) return;
-  const textInp = card.querySelector('.inline-sub-text');
-  const dateInp = card.querySelector('.inline-sub-date');
+  e.stopPropagation();
+  const pid = btn.getAttribute('data-pid');
+  if(!pid) return;
+  // Find inputs by scanning siblings of the button's parent row
+  const row = btn.parentElement; // .subtask-input-row
+  const area = row ? row.parentElement : null; // .subtask-input-area
+  if(!area) return;
+  const textInp = area.querySelector('.inline-sub-text');
+  const dateInp = area.querySelector('.inline-sub-date');
   const text = textInp ? textInp.value.trim() : '';
-  if(!text) return;
+  if(!text){ if(textInp) textInp.focus(); return; }
   const deadline = dateInp ? dateInp.value : '';
   const data = loadData();
   const p = data.projects.find(p => p.id === pid);
