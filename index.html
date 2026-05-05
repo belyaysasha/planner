@@ -535,6 +535,27 @@ main{padding:16px 14px;padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8
   </div></div>
 </div>
 
+<!-- Plain script: exposes _addSub globally so onclick attr works from module-rendered HTML -->
+<script>
+window._addSub = function(btn) {
+  var pid = btn.getAttribute('data-pid');
+  if(!pid) return;
+  var area = btn.parentElement && btn.parentElement.parentElement;
+  if(!area) return;
+  var textInp = area.querySelector('.inline-sub-text');
+  var dateInp = area.querySelector('.inline-sub-date');
+  var text = textInp ? textInp.value.trim() : '';
+  if(!text) { if(textInp) textInp.focus(); return; }
+  var deadline = dateInp ? dateInp.value : '';
+  // Delegate to module handler via custom event
+  document.dispatchEvent(new CustomEvent('addSubtask', {
+    detail: { pid: pid, text: text, deadline: deadline }
+  }));
+  if(textInp) textInp.value = '';
+  if(dateInp) dateInp.value = '';
+};
+</script>
+
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
@@ -877,7 +898,7 @@ function projectHTML(p){
       <div class="label-sm">Добавить подзадачу</div>
       <div class="subtask-input-row">
         <input type="text" placeholder="Название..." class="inline-sub-text">
-        <button class="inline-sub-btn" data-pid="${p.id}">+</button>
+        <button class="inline-sub-btn" data-pid="${p.id}" onclick="window._addSub(this)">+</button>
       </div>
       <div class="subtask-date-row">
         <label>Дедлайн:</label>
@@ -1218,22 +1239,10 @@ window.deleteSubtask=function(pid,sid){
   if(p)p.subtasks=p.subtasks.filter(s=>s.id!==sid);saveData(data);renderAll();
 };
 
-// Use event delegation — works regardless of subtask count
-document.addEventListener('click', function(e){
-  const btn = e.target.closest('.inline-sub-btn');
-  if(!btn) return;
-  e.stopPropagation();
-  const pid = btn.getAttribute('data-pid');
-  if(!pid) return;
-  // Find inputs by scanning siblings of the button's parent row
-  const row = btn.parentElement; // .subtask-input-row
-  const area = row ? row.parentElement : null; // .subtask-input-area
-  if(!area) return;
-  const textInp = area.querySelector('.inline-sub-text');
-  const dateInp = area.querySelector('.inline-sub-date');
-  const text = textInp ? textInp.value.trim() : '';
-  if(!text){ if(textInp) textInp.focus(); return; }
-  const deadline = dateInp ? dateInp.value : '';
+// Listen for subtask add events dispatched from plain script
+document.addEventListener('addSubtask', function(e){
+  const {pid, text, deadline} = e.detail;
+  if(!pid || !text) return;
   const data = loadData();
   const p = data.projects.find(p => p.id === pid);
   if(!p) return;
