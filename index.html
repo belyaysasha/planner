@@ -391,26 +391,17 @@ main{padding:16px 14px;padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8
   <div class="sheet"><div class="sheet-handle"></div><div class="sheet-inner">
     <h2 id="taskSheetTitle">Новая задача</h2>
     <div class="form-group"><label>Задача</label><textarea id="taskText" rows="3" placeholder="Описание..."></textarea></div>
-    <div class="form-row">
-      <div class="form-group"><label>Категория</label>
-        <select id="taskCategory" onchange="onCategoryChange()">
-          <option value="work">💼 Работа</option>
-          <option value="family">👨‍👩‍👧 Семья</option>
-          <option value="health">🏃 Здоровье</option>
-          <option value="personal">✨ Личное</option>
-        </select>
-      </div>
-      <div class="form-group" id="taskDayGroup"><label>День недели</label>
-        <select id="taskDay">
-          <option value="">Любой</option><option value="0">Пн</option><option value="1">Вт</option>
-          <option value="2">Ср</option><option value="3">Чт</option><option value="4">Пт</option>
-          <option value="5">Сб</option><option value="6">Вс</option>
-        </select>
-      </div>
+    <div class="form-group"><label>Категория</label>
+      <select id="taskCategory" onchange="onCategoryChange()">
+        <option value="work">💼 Работа</option>
+        <option value="family">👨‍👩‍👧 Семья</option>
+        <option value="health">🏃 Здоровье</option>
+        <option value="personal">✨ Личное</option>
+      </select>
     </div>
     <!-- Deadline date — shown for work tasks -->
     <div class="form-group" id="taskDeadlineGroup">
-      <label>Дедлайн (конкретная дата)</label>
+      <label>Дедлайн</label>
       <input type="date" id="taskDeadline">
     </div>
     <!-- Specific date — shown for personal tasks -->
@@ -885,12 +876,12 @@ function projectHTML(p){
     <div class="subtask-input-area" style="margin-top:12px">
       <div class="label-sm">Добавить подзадачу</div>
       <div class="subtask-input-row">
-        <input type="text" placeholder="Название..." data-pid="${p.id}" class="inline-sub-text">
-        <button onclick="addSubtaskInline('${p.id}')">+</button>
+        <input type="text" placeholder="Название..." class="inline-sub-text">
+        <button class="inline-sub-btn" data-pid="${p.id}">+</button>
       </div>
       <div class="subtask-date-row">
         <label>Дедлайн:</label>
-        <input type="date" data-pid="${p.id}" class="inline-sub-date">
+        <input type="date" class="inline-sub-date">
       </div>
     </div>
   </div>`;
@@ -1099,7 +1090,6 @@ window.openTaskSheet=function(category){
   editingTaskId=null;
   document.getElementById('taskSheetTitle').textContent='Новая задача';
   document.getElementById('taskText').value='';
-  document.getElementById('taskDay').value='';
   document.getElementById('taskDeadline').value='';
   document.getElementById('taskDate').value='';
   document.getElementById('taskCategory').value=category||'work';
@@ -1110,7 +1100,6 @@ window.openTaskSheet=function(category){
 function onCategoryChange(){
   const cat=document.getElementById('taskCategory').value,isWork=cat==='work';
   document.getElementById('projectLinkGroup').style.display=isWork?'':'none';
-  document.getElementById('taskDayGroup').style.display=isWork?'':'none';
   document.getElementById('taskDeadlineGroup').style.display=isWork?'':'none';
   document.getElementById('taskDateGroup').style.display=isWork?'none':'';
   if(isWork)populateProjectSelect();
@@ -1125,25 +1114,23 @@ window.closeTaskSheet=function(){document.getElementById('taskSheet').classList.
 window.saveTask=function(){
   const text=document.getElementById('taskText').value.trim();if(!text)return;
   const category=document.getElementById('taskCategory').value;
-  const dayVal=document.getElementById('taskDay').value;
-  const deadlineVal=document.getElementById('taskDeadline').value; // work deadline
-  const dateVal=document.getElementById('taskDate').value;          // personal date
+  const deadlineVal=document.getElementById('taskDeadline').value;
+  const dateVal=document.getElementById('taskDate').value;
   const projectId=document.getElementById('taskProject').value;
   const data=loadData();
-  // Determine weekKey: if deadline set → use its week; if specificDate → use its week; else current
   const wk=deadlineVal?weekKeyForDate(deadlineVal):dateVal?weekKeyForDate(dateVal):getWeekKey(currentWeekOffset);
   if(editingTaskId){
     const t=data.tasks.find(t=>t.id===editingTaskId);
     if(t){
       t.text=text;t.category=category;
-      t.dayOfWeek=dayVal!==''?Number(dayVal):null;
+      t.dayOfWeek=null;
       t.deadline=deadlineVal||null;
       t.specificDate=dateVal||null;
       t.projectId=projectId||null;
       t.weekKey=wk;
     }
   }else{
-    data.tasks.push({id:uid(),text,category,weekKey:wk,dayOfWeek:dayVal!==''?Number(dayVal):null,deadline:deadlineVal||null,specificDate:dateVal||null,done:false,notes:'',comments:[],projectId:projectId||null});
+    data.tasks.push({id:uid(),text,category,weekKey:wk,dayOfWeek:null,deadline:deadlineVal||null,specificDate:dateVal||null,done:false,notes:'',comments:[],projectId:projectId||null});
   }
   saveData(data);closeTaskSheet();renderAll();
 };
@@ -1153,7 +1140,6 @@ window.editTask=function(id){
   document.getElementById('taskSheetTitle').textContent='Редактировать задачу';
   document.getElementById('taskText').value=t.text;
   document.getElementById('taskCategory').value=t.category;
-  document.getElementById('taskDay').value=t.dayOfWeek!=null&&t.dayOfWeek!==''?t.dayOfWeek:'';
   document.getElementById('taskDeadline').value=t.deadline||'';
   document.getElementById('taskDate').value=t.specificDate||'';
   onCategoryChange();
@@ -1232,17 +1218,25 @@ window.deleteSubtask=function(pid,sid){
   if(p)p.subtasks=p.subtasks.filter(s=>s.id!==sid);saveData(data);renderAll();
 };
 
-// BUG FIX: use data-pid attributes instead of dynamic element IDs that break after re-render
-window.addSubtaskInline=function(pid){
-  const card=document.getElementById('pc_'+pid);if(!card)return;
-  const textInp=card.querySelector('.inline-sub-text');
-  const dateInp=card.querySelector('.inline-sub-date');
-  const text=textInp?textInp.value.trim():'';if(!text)return;
-  const deadline=dateInp?dateInp.value:'';
-  const data=loadData(),p=data.projects.find(p=>p.id===pid);if(!p)return;
-  p.subtasks.push({id:uid(),text,done:false,deadline:deadline||null,notes:'',comments:[]});
-  saveData(data);renderAll();
-};
+// BUG FIX: use event delegation on document — onclick attrs don't work reliably in type=module
+document.addEventListener('click', function(e){
+  const btn = e.target.closest('.inline-sub-btn');
+  if(!btn) return;
+  const pid = btn.dataset.pid;
+  const card = btn.closest('.project-card');
+  if(!card || !pid) return;
+  const textInp = card.querySelector('.inline-sub-text');
+  const dateInp = card.querySelector('.inline-sub-date');
+  const text = textInp ? textInp.value.trim() : '';
+  if(!text) return;
+  const deadline = dateInp ? dateInp.value : '';
+  const data = loadData();
+  const p = data.projects.find(p => p.id === pid);
+  if(!p) return;
+  p.subtasks.push({id:uid(), text, done:false, deadline:deadline||null, notes:'', comments:[]});
+  saveData(data);
+  renderAll();
+});
 
 // ===== EXPORT / IMPORT =====
 window.openSyncSheet=function(){
