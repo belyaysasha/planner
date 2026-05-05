@@ -547,12 +547,11 @@ window._addSub = function(btn) {
   var text = textInp ? textInp.value.trim() : '';
   if(!text) { if(textInp) textInp.focus(); return; }
   var deadline = dateInp ? dateInp.value : '';
-  // Delegate to module handler via custom event
-  document.dispatchEvent(new CustomEvent('addSubtask', {
-    detail: { pid: pid, text: text, deadline: deadline }
-  }));
-  if(textInp) textInp.value = '';
-  if(dateInp) dateInp.value = '';
+  if(typeof window._doAddSub === 'function') {
+    window._doAddSub(pid, text, deadline);
+    if(textInp) textInp.value = '';
+    if(dateInp) dateInp.value = '';
+  }
 };
 </script>
 
@@ -1247,17 +1246,15 @@ window.deleteSubtask=function(pid,sid){
   if(p)p.subtasks=p.subtasks.filter(s=>s.id!==sid);saveData(data);renderAll();
 };
 
-// Listen for subtask add events dispatched from plain script
-document.addEventListener('addSubtask', function(e){
-  const {pid, text, deadline} = e.detail;
-  if(!pid || !text) return;
+// Register inline subtask add — called from plain script via window._addSub
+window._doAddSub = function(pid, text, deadline) {
   const data = loadData();
   const p = data.projects.find(p => p.id === pid);
   if(!p) return;
   p.subtasks.push({id:uid(), text, done:false, deadline:deadline||null, notes:'', comments:[]});
   saveData(data);
   renderAll();
-});
+};
 
 // ===== EXPORT / IMPORT =====
 window.openSyncSheet=function(){
