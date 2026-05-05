@@ -570,7 +570,7 @@ const firebaseConfig = {
   appId:             "1:824800823619:web:36ec6505b90408576e47f6"
 };
 
-let db=null, firebaseReady=false, remoteData=null, saveTimer=null;
+let db=null, firebaseReady=false, remoteData=null, saveTimer=null, isSaving=false;
 let currentWeekOffset=0, selectedDayFilter=null;
 let editingTaskId=null, editingProjectId=null;
 let viewingTaskId=null, viewingProjectId=null, viewingSubtaskId=null;
@@ -589,13 +589,20 @@ function setSyncStatus(state,text){
 }
 
 async function saveData(d){
-  saveLocal(d);remoteData=d;
-  if(!firebaseReady||!db)return;
+  saveLocal(d); remoteData=d;
+  if(!firebaseReady||!db) return;
   setSyncStatus('syncing','сохранение...');
+  isSaving=true;
   clearTimeout(saveTimer);
   saveTimer=setTimeout(async()=>{
-    try{await set(ref(db,'planner'),d);setSyncStatus('online','синхронизировано');}
-    catch(e){setSyncStatus('offline','ошибка');console.error(e);}
+    try{
+      await set(ref(db,'planner'),d);
+      setSyncStatus('online','синхронизировано');
+    }catch(e){
+      setSyncStatus('offline','ошибка');console.error(e);
+    } finally {
+      isSaving=false;
+    }
   },600);
 }
 
@@ -605,6 +612,7 @@ function initFirebase(){
     db=getDatabase(app);
     setSyncStatus('syncing','подключение...');
     onValue(ref(db,'planner'),(snap)=>{
+      if(isSaving) return; // skip stale Firebase echo during local save
       const val=snap.val();
       if(val&&(val.tasks||val.projects)){
         remoteData={tasks:val.tasks||[],projects:val.projects||[]};
