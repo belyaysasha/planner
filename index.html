@@ -19,6 +19,7 @@
   --health:#b85c00;--health-soft:#fdf0e5;
   --personal:#1a6b6b;--personal-soft:#e5f2f2;
   --done:#a0a090;--radius:14px;
+  --book:#5b3a1a;--book-soft:#f5ede3;--book-border:#e8d5c0;
   --safe-bottom:env(safe-area-inset-bottom,0px);
   --safe-top:env(safe-area-inset-top,0px);
   --nav-h:64px;
@@ -231,6 +232,22 @@ main{padding:16px 14px;padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8
 .export-btn.secondary{background:var(--surface2);color:var(--text);border:1.5px solid var(--border);}
 .export-btn:active{opacity:0.8;}
 #importFileInput{display:none;}
+/* BOOK SCREEN */
+.book-section-switcher{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;}
+.book-section-switcher::-webkit-scrollbar{display:none;}
+.book-pill{flex-shrink:0;border:1.5px solid var(--book-border);background:var(--surface);border-radius:20px;padding:6px 14px;font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:600;color:var(--book);cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.book-pill.active{background:var(--book);color:white;border-color:var(--book);}
+.book-pill:active{opacity:0.7;}
+.book-subsection{display:none;}
+.book-subsection.active{display:block;}
+.book-note-card{background:var(--surface);border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1px solid var(--book-border);box-shadow:0 1px 8px rgba(0,0,0,0.05);}
+.book-note-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;margin-bottom:8px;color:var(--book);}
+.book-note-body{font-size:14px;line-height:1.6;color:var(--text);white-space:pre-wrap;word-break:break-word;}
+.book-note-meta{font-size:11px;color:var(--text-light);font-family:'IBM Plex Mono',monospace;margin-top:8px;}
+.book-note-actions{display:flex;gap:4px;float:right;margin-top:-2px;}
+.book-add-btn{display:flex;align-items:center;gap:8px;background:var(--book-soft);border:1.5px solid var(--book-border);border-radius:11px;padding:12px 16px;width:100%;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:600;color:var(--book);margin-bottom:14px;}
+.book-add-btn:active{opacity:0.7;}
+
 .empty-state{text-align:center;padding:22px 10px;color:var(--text-light);font-size:14px;}
 ::-webkit-scrollbar{width:0;}
 </style>
@@ -366,14 +383,47 @@ main{padding:16px 14px;padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8
     </div>
   </div>
 
+  <!-- ===== BOOK SCREEN ===== -->
+  <div class="screen" id="screenBook">
+    <div class="page-title">📖 Книга</div>
+    <div class="book-section-switcher">
+      <button class="book-pill active" onclick="switchBookSection('reading')">📚 К прочтению</button>
+      <button class="book-pill" onclick="switchBookSection('philosophy')">💭 Философия</button>
+      <button class="book-pill" onclick="switchBookSection('concepts')">🔬 Концепции</button>
+      <button class="book-pill" onclick="switchBookSection('plot')">🎬 Сюжет</button>
+      <button class="book-pill" onclick="switchBookSection('text')">✍️ Текст</button>
+    </div>
+    <div class="book-subsection active" id="bs-reading">
+      <button class="book-add-btn" onclick="openBookNoteSheet('reading')">+ Добавить книгу / автора</button>
+      <div id="bookList-reading"></div>
+    </div>
+    <div class="book-subsection" id="bs-philosophy">
+      <button class="book-add-btn" onclick="openBookNoteSheet('philosophy')">+ Добавить мысль</button>
+      <div id="bookList-philosophy"></div>
+    </div>
+    <div class="book-subsection" id="bs-concepts">
+      <button class="book-add-btn" onclick="openBookNoteSheet('concepts')">+ Добавить концепцию</button>
+      <div id="bookList-concepts"></div>
+    </div>
+    <div class="book-subsection" id="bs-plot">
+      <button class="book-add-btn" onclick="openBookNoteSheet('plot')">+ Добавить идею</button>
+      <div id="bookList-plot"></div>
+    </div>
+    <div class="book-subsection" id="bs-text">
+      <button class="book-add-btn" onclick="openBookNoteSheet('text')">+ Добавить фрагмент</button>
+      <div id="bookList-text"></div>
+    </div>
+  </div>
+
 </main>
 
-<!-- BOTTOM NAV: 4 tabs -->
+<!-- BOTTOM NAV: 5 tabs -->
 <nav class="bottom-nav">
   <div class="nav-item active" id="navWeek" onclick="switchScreen('week')"><span class="nav-icon">📅</span><span>Неделя</span></div>
   <div class="nav-item" id="navWork" onclick="switchScreen('work')"><span class="nav-icon">💼</span><span>Работа</span></div>
   <div class="nav-item" id="navProjects" onclick="switchScreen('projects')"><span class="nav-icon">📁</span><span>Проекты</span></div>
   <div class="nav-item" id="navPersonal" onclick="switchScreen('personal')"><span class="nav-icon">🏠</span><span>Личное</span></div>
+  <div class="nav-item" id="navBook" onclick="switchScreen('book')"><span class="nav-icon">📖</span><span>Книга</span></div>
 </nav>
 
 <button class="fab" id="fabBtn" onclick="toggleFabMenu()">+</button>
@@ -535,6 +585,25 @@ main{padding:16px 14px;padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8
   </div></div>
 </div>
 
+<!-- BOOK NOTE SHEET -->
+<div class="sheet-overlay" id="bookNoteSheet">
+  <div class="sheet"><div class="sheet-handle"></div><div class="sheet-inner">
+    <h2 id="bookNoteSheetTitle">Новая заметка</h2>
+    <div class="form-group">
+      <label>Заголовок</label>
+      <input type="text" id="bookNoteTitle" placeholder="Название / тема...">
+    </div>
+    <div class="form-group">
+      <label>Текст</label>
+      <textarea id="bookNoteBody" rows="8" placeholder="Содержание..."></textarea>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn-cancel" onclick="closeBookNoteSheet()">Отмена</button>
+      <button class="btn-save" onclick="saveBookNote()" style="background:var(--book)">Сохранить</button>
+    </div>
+  </div></div>
+</div>
+
 <!-- Plain script: exposes _addSub globally so onclick attr works from module-rendered HTML -->
 <script>
 window._addSub = function(btn) {
@@ -578,7 +647,7 @@ let notesTimer=null, projNotesTimer=null, subtaskNotesTimer=null;
 let activeWeekSection='work';
 
 const LOCAL_KEY='planner_v2';
-function loadLocal(){try{return JSON.parse(localStorage.getItem(LOCAL_KEY))||{tasks:[],projects:[]};}catch{return{tasks:[],projects:[]};}}
+function loadLocal(){try{return JSON.parse(localStorage.getItem(LOCAL_KEY))||{tasks:[],projects:[],book:{}};}catch{return{tasks:[],projects:[],book:{}};}}
 function saveLocal(d){localStorage.setItem(LOCAL_KEY,JSON.stringify(d));}
 function loadData(){return remoteData||loadLocal();}
 
@@ -823,6 +892,7 @@ function renderAll(){
   // Project subtasks this week
   renderProjectWeekTasks(data,wk);
   renderProjects(data);
+  renderBook(data);
 }
 window.renderAll=renderAll;
 
@@ -1089,9 +1159,97 @@ window.deleteProjComment=function(idx){
   p.comments.splice(idx,1);saveData(data);renderComments(p.comments,'projCommentsList','deleteProjComment');renderAll();
 };
 
+// ===== BOOK =====
+const BOOK_SECTIONS = ['reading','philosophy','concepts','plot','text'];
+let activeBookSection = 'reading';
+let editingBookNote = null; // {section, id}
+
+window.switchBookSection = function(sec) {
+  activeBookSection = sec;
+  document.querySelectorAll('.book-subsection').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.book-pill').forEach(el => el.classList.remove('active'));
+  document.getElementById('bs-' + sec).classList.add('active');
+  document.querySelectorAll('.book-pill').forEach(el => {
+    if(el.getAttribute('onclick').includes("'"+sec+"'")) el.classList.add('active');
+  });
+};
+
+function renderBook(data) {
+  const book = data.book || {};
+  BOOK_SECTIONS.forEach(sec => {
+    const notes = book[sec] || [];
+    const el = document.getElementById('bookList-' + sec);
+    if(!el) return;
+    if(notes.length === 0) {
+      el.innerHTML = `<div class="empty-state">Заметок пока нет</div>`;
+      return;
+    }
+    el.innerHTML = [...notes].reverse().map(n => `
+      <div class="book-note-card">
+        <div class="book-note-actions">
+          <button class="task-action-btn" onclick="editBookNote('${sec}','${n.id}')">✎</button>
+          <button class="task-action-btn del" onclick="deleteBookNote('${sec}','${n.id}')">✕</button>
+        </div>
+        ${n.title ? `<div class="book-note-title">${escHtml(n.title)}</div>` : ''}
+        <div class="book-note-body">${escHtml(n.body)}</div>
+        <div class="book-note-meta">${formatDateTime(n.createdAt)}</div>
+      </div>`).join('');
+  });
+}
+
+window.openBookNoteSheet = function(sec) {
+  editingBookNote = null;
+  activeBookSection = sec;
+  document.getElementById('bookNoteSheetTitle').textContent = 'Новая заметка';
+  document.getElementById('bookNoteTitle').value = '';
+  document.getElementById('bookNoteBody').value = '';
+  document.getElementById('bookNoteSheet').classList.add('open');
+  setTimeout(() => document.getElementById('bookNoteTitle').focus(), 350);
+};
+
+window.closeBookNoteSheet = function() {
+  document.getElementById('bookNoteSheet').classList.remove('open');
+  editingBookNote = null;
+};
+
+window.saveBookNote = function() {
+  const title = document.getElementById('bookNoteTitle').value.trim();
+  const body = document.getElementById('bookNoteBody').value.trim();
+  if(!body && !title) return;
+  const data = loadData();
+  if(!data.book) data.book = {};
+  const sec = editingBookNote ? editingBookNote.section : activeBookSection;
+  if(!data.book[sec]) data.book[sec] = [];
+  if(editingBookNote) {
+    const n = data.book[sec].find(n => n.id === editingBookNote.id);
+    if(n) { n.title = title; n.body = body; }
+  } else {
+    data.book[sec].push({ id: uid(), title, body, createdAt: new Date().toISOString() });
+  }
+  saveData(data); closeBookNoteSheet(); renderAll();
+};
+
+window.editBookNote = function(sec, id) {
+  const data = loadData();
+  const n = (data.book && data.book[sec] || []).find(n => n.id === id);
+  if(!n) return;
+  editingBookNote = { section: sec, id };
+  document.getElementById('bookNoteSheetTitle').textContent = 'Редактировать';
+  document.getElementById('bookNoteTitle').value = n.title || '';
+  document.getElementById('bookNoteBody').value = n.body || '';
+  document.getElementById('bookNoteSheet').classList.add('open');
+};
+
+window.deleteBookNote = function(sec, id) {
+  if(!confirm('Удалить заметку?')) return;
+  const data = loadData();
+  if(data.book && data.book[sec]) data.book[sec] = data.book[sec].filter(n => n.id !== id);
+  saveData(data); renderAll();
+};
+
 // ===== SCREENS =====
 window.switchScreen=function(s){
-  ['week','work','projects','personal'].forEach(n=>{
+  ['week','work','projects','personal','book'].forEach(n=>{
     document.getElementById('screen'+cap(n)).classList.toggle('active',n===s);
     document.getElementById('nav'+cap(n)).classList.toggle('active',n===s);
   });
@@ -1292,10 +1450,10 @@ window.clearAllData=async function(){
 
 window.changeWeek=function(dir){currentWeekOffset+=dir;selectedDayFilter=null;renderAll();};
 
-['taskSheet','projectSheet','taskDetailSheet','subtaskDetailSheet','projectNotesSheet','syncSheet'].forEach(id=>{
+['taskSheet','projectSheet','taskDetailSheet','subtaskDetailSheet','projectNotesSheet','syncSheet','bookNoteSheet'].forEach(id=>{
   document.getElementById(id).addEventListener('click',function(e){
     if(e.target!==this)return;
-    const map={taskSheet:closeTaskSheet,projectSheet:closeProjectSheet,taskDetailSheet:closeTaskDetail,subtaskDetailSheet:closeSubtaskDetail,projectNotesSheet:closeProjNotesSheet,syncSheet:closeSyncSheet};
+    const map={taskSheet:closeTaskSheet,projectSheet:closeProjectSheet,taskDetailSheet:closeTaskDetail,subtaskDetailSheet:closeSubtaskDetail,projectNotesSheet:closeProjNotesSheet,syncSheet:closeSyncSheet,bookNoteSheet:closeBookNoteSheet};
     map[id]&&map[id]();
   });
 });
